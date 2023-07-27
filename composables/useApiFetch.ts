@@ -1,7 +1,12 @@
 import type { UseFetchOptions } from 'nuxt/app'
 
 export function useApiFetch<T> (path: string, options: UseFetchOptions<T> = {}) {
-    let headers: any = {}
+    const siteUrl = process.env.SITE_URL
+    
+    let headers: any = {
+        accept: "application/json",
+        referer: siteUrl
+    }
 
     const token = useCookie('XSRF-TOKEN')
 
@@ -12,11 +17,11 @@ export function useApiFetch<T> (path: string, options: UseFetchOptions<T> = {}) 
     if (process.server) {
         headers = {
             ...headers,
-            ...useRequestHeaders(['cookie', 'referer'])
+            ...useRequestHeaders(['cookie'])
         }
     }
 
-    return useFetch("http://localhost:8000"+path, {
+    return useFetch(siteUrl+path, {
         credentials: "include",
         watch: false,
         ...options,
